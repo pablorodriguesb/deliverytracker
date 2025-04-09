@@ -1,33 +1,26 @@
 package com.dtpablo.deliverytracker.controller;
 
-import com.dtpablo.deliverytracker.entity.Rota;
-import com.dtpablo.deliverytracker.repository.RotaRepository;
+import com.dtpablo.deliverytracker.entity.Entregador;
+import com.dtpablo.deliverytracker.repository.EntregadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rotas")
+@RequestMapping("/api/entregadores")
 @RequiredArgsConstructor
-public class RotaController {
+public class EntregadorController {
 
-    private final RotaRepository rotaRepository;
+    private final EntregadorRepository entregadorRepository;
 
     @PostMapping
-    public Rota criar(@RequestBody Rota rota) {
-        return rotaRepository.save(rota);
+    public Entregador criar(@RequestBody Entregador entregador) {
+        return entregadorRepository.save(entregador);
     }
 
-    //  NOVO: Listar todas as rotas
     @GetMapping
-    public List<Rota> listarTodas() {
-        return rotaRepository.findAll();
-    }
-
-    // ? Rota específica por entregador
-    @GetMapping("/{entregadorId}")
-    public List<Rota> listarPorEntregador(@PathVariable Long entregadorId) {
-        return rotaRepository.findByEntregadorId(entregadorId);
+    public List<Entregador> listarTodos() {
+        return entregadorRepository.findAll();
     }
 }
