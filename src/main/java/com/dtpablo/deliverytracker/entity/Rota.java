@@ -8,21 +8,17 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Rota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "entregador_id", nullable = false)
     private Entregador entregador;
 
-    private Double pontoInicioLat;
-    private Double pontoInicioLng;
-
-    private Double pontoFimLat;
-    private Double pontoFimLng;
-
-    @ElementCollection
-    private List<String> checkpoints;
+    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PontoRota> pontos;
 }
