@@ -2,28 +2,28 @@ package com.dtpablo.deliverytracker.controller;
 
 import com.dtpablo.deliverytracker.entity.PontoRota;
 import com.dtpablo.deliverytracker.service.PontoRotaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/pontos")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class PontoRotaController {
 
     private final PontoRotaService pontoRotaService;
 
-    public PontoRotaController(PontoRotaService pontoRotaService) {
-        this.pontoRotaService = pontoRotaService;
-    }
-
-    @GetMapping("/{entregadorId}")
-    public List<PontoRota> listarPontos(@PathVariable Long entregadorId) {
-        return pontoRotaService.listarPontosPorEntregador(entregadorId);
+    @GetMapping("/entregador/{entregadorId}")
+    public ResponseEntity<List<PontoRota>> listarPorEntregador(@PathVariable Long entregadorId) {
+        List<PontoRota> pontos = pontoRotaService.listarPontosPorEntregador(entregadorId);
+        return ResponseEntity.ok(pontos);
     }
 
     @PostMapping
-    public PontoRota salvar(@RequestBody PontoRota pontoRota) {
-        return pontoRotaService.salvarPonto(pontoRota);
+    public ResponseEntity<PontoRota> salvar(@RequestBody PontoRota ponto) {
+        PontoRota novoPonto = pontoRotaService.salvarPonto(ponto);
+        return ResponseEntity.ok(novoPonto);
     }
 }

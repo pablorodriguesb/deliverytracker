@@ -15,9 +15,14 @@ public class PontoRota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relacionamento com o entregador
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "entregador_id", nullable = false)
-    private Entregador entregador;
+    private Entregador entregador;  // Adicionado o relacionamento com Entregador
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "rota_id", nullable = false)
+    private Rota rota;
 
     @Column(nullable = false)
     private Double latitude;
@@ -28,11 +33,7 @@ public class PontoRota {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "rota_id", nullable = false)
-    private Rota rota;
-
-    // Campo novo: define a ordem do ponto dentro da rota
+    // Campo para definir a ordem do ponto na rota
     @Column(nullable = false)
     private Integer ordem;
 }

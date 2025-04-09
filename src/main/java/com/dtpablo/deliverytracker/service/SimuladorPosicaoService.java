@@ -1,14 +1,15 @@
 package com.dtpablo.deliverytracker.service;
 
+import com.dtpablo.deliverytracker.dto.PosicaoDTO;
 import com.dtpablo.deliverytracker.entity.Entregador;
 import com.dtpablo.deliverytracker.entity.PontoRota;
 import com.dtpablo.deliverytracker.enums.Status;
 import com.dtpablo.deliverytracker.repository.EntregadorRepository;
-import com.dtpablo.deliverytracker.websocket.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,17 @@ public class SimuladorPosicaoService {
                 entregador.setLongitudeAtual(novoPonto.getLongitude());
 
                 entregadorRepository.save(entregador);
-                webSocketService.enviarPosicaoAtualizada(entregador);
+
+                // Criar DTO e enviar pelo WebSocket
+                PosicaoDTO posicaoDTO = new PosicaoDTO(
+                        entregador.getId(),
+                        entregador.getLatitudeAtual(),
+                        entregador.getLongitudeAtual(),
+                        entregador.getStatus().toString(),
+                        LocalDateTime.now()
+                );
+
+                webSocketService.enviarPosicaoAtualizada(posicaoDTO);
 
                 indiceAtualPorEntregador.put(entregador.getId(), indiceAtual + 1);
             }

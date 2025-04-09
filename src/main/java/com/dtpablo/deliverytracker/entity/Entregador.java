@@ -40,13 +40,14 @@ public class Entregador {
 
     // Relacionamento com a rota do entregador
     @OneToMany(mappedBy = "entregador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("ordem ASC")
     private List<PontoRota> rota;
 
     // Método para obter a rota em ordem
     public List<PontoRota> getRotaOrdenada() {
         return rota == null ? List.of() :
-               rota.stream()
-                   .sorted(Comparator.comparing(PontoRota::getOrdem))
-                   .toList();
+                rota.stream()
+                        .sorted(Comparator.comparing(PontoRota::getOrdem))
+                        .toList();
     }
 }
