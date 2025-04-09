@@ -27,8 +27,12 @@ public class PontoRota {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
-    
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rota_id", nullable = false)
     private Rota rota;
+
+    // Campo novo: define a ordem do ponto dentro da rota
+    @Column(nullable = false)
+    private Integer ordem;
 }

@@ -15,10 +15,11 @@ public class Rota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "entregador_id", nullable = false)
     private Entregador entregador;
 
-    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("ordem ASC") // ordena os pontos automaticamente pela ordem
     private List<PontoRota> pontos;
 }
