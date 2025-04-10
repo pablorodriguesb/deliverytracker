@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,30 +31,43 @@ public class SimuladorPosicaoService {
         List<Entregador> entregadoresAtivos = entregadorRepository.findByStatus(Status.ATIVO);
 
         for (Entregador entregador : entregadoresAtivos) {
-            List<PontoRota> rota = entregador.getRotaOrdenada(); // precisa vir ordenada
+            List<PontoRota> rota = entregador.getRotaOrdenada(); // A rota já deve estar ordenada
 
+            // Pegando o índice atual ou iniciando com 0
             int indiceAtual = indiceAtualPorEntregador.getOrDefault(entregador.getId(), 0);
 
+            // Verificando se o índice atual ainda está dentro do tamanho da rota
             if (indiceAtual < rota.size()) {
                 PontoRota novoPonto = rota.get(indiceAtual);
 
+                // Atualizando as coordenadas do entregador
                 entregador.setLatitudeAtual(novoPonto.getLatitude());
                 entregador.setLongitudeAtual(novoPonto.getLongitude());
 
+                // Atualizando o campo de última atualização
+                entregador.setUltimaAtualizacao(LocalDateTime.now());
+
+                // Salvando o entregador com a posição atualizada
                 entregadorRepository.save(entregador);
 
-                // Criar DTO e enviar pelo WebSocket
+                // Criando o DTO para a posição e enviando via WebSocket
                 PosicaoDTO posicaoDTO = new PosicaoDTO(
                         entregador.getId(),
+                        entregador.getNome(),
+                        entregador.getStatus(),
                         entregador.getLatitudeAtual(),
                         entregador.getLongitudeAtual(),
-                        entregador.getStatus().toString(),
-                        LocalDateTime.now()
+                        LocalDateTime.now().toInstant(ZoneOffset.UTC) // Usando a hora atual para o timestamp
                 );
 
-                webSocketService.enviarPosicaoAtualizada(posicaoDTO);
+                // Enviando a posição via WebSocket
+                webSocketService.enviarPosicao(posicaoDTO);
 
+                // Atualizando o índice para o próximo ponto na rota
                 indiceAtualPorEntregador.put(entregador.getId(), indiceAtual + 1);
+            } else {
+                // Se o entregador percorreu toda a rota, reiniciar o índice ou parar
+                indiceAtualPorEntregador.put(entregador.getId(), 0); // Recomeçar ou pode definir outro comportamento
             }
         }
     }

@@ -8,8 +8,13 @@ import java.util.List;
 
 public interface RotaRepository extends JpaRepository<Rota, Long> {
 
+    @Override
     @EntityGraph(attributePaths = {"pontos"})
     Optional<Rota> findById(Long id);
+
+    @Override
+    @EntityGraph(attributePaths = {"pontos"})
+    List<Rota> findAll();
 
     List<Rota> findByEntregadorId(Long entregadorId);
 }

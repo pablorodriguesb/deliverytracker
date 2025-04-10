@@ -1,18 +1,13 @@
 package com.dtpablo.deliverytracker.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.Instant;
+import com.dtpablo.deliverytracker.enums.Status;
 
-import java.time.LocalDateTime;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class PosicaoDTO {
-    private Long entregadorId;
-    private Double latitude;
-    private Double longitude;
-    private String status;
-    private LocalDateTime timestamp;
-}
+public record PosicaoDTO(
+        Long entregadorId,
+        String nome,
+        Status status,
+        Double latitude,
+        Double longitude,
+        Instant timestamp
+) {}

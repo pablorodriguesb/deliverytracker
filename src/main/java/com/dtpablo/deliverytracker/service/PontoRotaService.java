@@ -22,4 +22,9 @@ public class PontoRotaService {
     public PontoRota salvarPonto(PontoRota ponto) {
         return pontoRotaRepository.save(ponto);
     }
+
+    public List<PontoRota> buscarTodosOrdenadosPorTempo() {
+        return pontoRotaRepository.findAllByOrderByTimestampAsc();
+    }
+
 }

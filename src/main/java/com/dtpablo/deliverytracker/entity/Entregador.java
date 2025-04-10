@@ -4,6 +4,7 @@ import com.dtpablo.deliverytracker.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,19 +32,20 @@ public class Entregador {
     @Column(nullable = false)
     private Double longitude;
 
-    // Novos campos para simulação da posição atual
     @Column(nullable = true)
     private Double latitudeAtual;
 
     @Column(nullable = true)
     private Double longitudeAtual;
 
-    // Relacionamento com a rota do entregador
     @OneToMany(mappedBy = "entregador", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("ordem ASC")
     private List<PontoRota> rota;
 
-    // Método para obter a rota em ordem
+    // Campo para armazenar a data/hora da última atualização
+    @Column(nullable = true)
+    private LocalDateTime ultimaAtualizacao;
+
     public List<PontoRota> getRotaOrdenada() {
         return rota == null ? List.of() :
                 rota.stream()

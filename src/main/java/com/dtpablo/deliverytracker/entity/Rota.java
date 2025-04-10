@@ -3,6 +3,8 @@ package com.dtpablo.deliverytracker.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,8 +24,11 @@ public class Rota {
     private Entregador entregador;
 
     @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("ordem ASC") // ordena os pontos automaticamente pela ordem
-    private List<PontoRota> pontos;
+    @OrderBy("ordem ASC")
+    private List<PontoRota> pontos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RotaCheckpoint> checkpoints = new ArrayList<>();
 
     private String nome;
 }
