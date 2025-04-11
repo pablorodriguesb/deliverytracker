@@ -54,7 +54,8 @@ public class SimuladorLocalizacaoService {
         }
 
         Map<Long, List<PontoRota>> pontosPorEntregador = todosPontos.stream()
-                .collect(Collectors.groupingBy(p -> p.getEntregador().getId()));
+                .collect(Collectors.groupingBy(p -> p.getRota().getEntregador().getId()));
+
 
         for (Map.Entry<Long, List<PontoRota>> entry : pontosPorEntregador.entrySet()) {
             Long entregadorId = entry.getKey();
@@ -73,7 +74,7 @@ public class SimuladorLocalizacaoService {
 
             PontoRotaDTO pontoRotaDTO = new PontoRotaDTO(
                     entregadorId,
-                    pontoAtual.getEntregador().getNome(),
+                    pontoAtual.getRota().getEntregador().getNome(),
                     Status.EM_ROTA, // Simulando como se estivesse em rota
                     pontoAtual.getLatitude(),
                     pontoAtual.getLongitude(),

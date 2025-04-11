@@ -1,6 +1,7 @@
 package com.dtpablo.deliverytracker.controller;
 
 import com.dtpablo.deliverytracker.dto.RotaDTO;
+import com.dtpablo.deliverytracker.dto.PontoDTO;
 import com.dtpablo.deliverytracker.entity.Rota;
 import com.dtpablo.deliverytracker.entity.PontoRota;
 import com.dtpablo.deliverytracker.service.RotaService;
@@ -27,57 +28,53 @@ public class RotaController {
 
     @GetMapping
     public ResponseEntity<List<RotaDTO>> listarTodas() {
-        // Obtendo as rotas
         List<Rota> rotas = rotaService.listarTodas();
 
-        // Verificando se as rotas estão vazias
         if (rotas.isEmpty()) {
-            return ResponseEntity.noContent().build();  // Retorna 204 No Content
+            return ResponseEntity.noContent().build();
         }
 
-        // Log para ajudar na depuração
-        System.out.println("Rotas encontradas: " + rotas);
-
-        // Converte as rotas para DTO
         List<RotaDTO> rotasDTO = rotas.stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(rotasDTO);  // Retorna as rotas convertidas
+        return ResponseEntity.ok(rotasDTO);
     }
 
     @GetMapping("/{entregadorId}")
     public ResponseEntity<List<RotaDTO>> listarPorEntregador(@PathVariable Long entregadorId) {
-        // Obtendo as rotas por entregador
         List<Rota> rotas = rotaService.listarPorEntregador(entregadorId);
 
-        // Verificando se as rotas estão vazias
         if (rotas.isEmpty()) {
-            return ResponseEntity.noContent().build();  // Retorna 204 No Content
+            return ResponseEntity.noContent().build();
         }
 
-        // Converte as rotas para DTO
         List<RotaDTO> rotasDTO = rotas.stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(rotasDTO);  // Retorna as rotas convertidas
+        return ResponseEntity.ok(rotasDTO);
     }
 
-    // Método para converter Rota para RotaDTO
+    // Converte entidade Rota para DTO sem referência circular
     private RotaDTO converterParaDTO(Rota rota) {
-        // Obtendo o nome do entregador
         String nomeEntregador = (rota.getEntregador() != null) ? rota.getEntregador().getNome() : null;
 
-        // Acessando os pontos da rota
-        List<PontoRota> pontos = rota.getPontos();
+        List<PontoDTO> pontosDTO = rota.getPontos().stream()
+                .map(ponto -> new PontoDTO(
+                        ponto.getId(),
+                        ponto.getLatitude(),
+                        ponto.getLongitude(),
+                        ponto.getTimestamp(),
+                        ponto.getIsCheckpoint()
+                ))
+                .collect(Collectors.toList());
 
-        // Retornando o DTO com os dados da rota
         return new RotaDTO(
                 rota.getId(),
                 rota.getNome(),
                 nomeEntregador,
-                pontos
+                pontosDTO
         );
     }
 }

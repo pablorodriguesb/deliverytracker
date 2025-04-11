@@ -1,7 +1,7 @@
 package com.dtpablo.deliverytracker.entity;
 
 import com.dtpablo.deliverytracker.enums.Status;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "entregadores")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,16 +32,13 @@ public class Entregador {
     @Column(name = "ultima_atualizacao")
     private LocalDateTime ultimaAtualizacao;
 
-    // Relacionamento com PontoRota
     @OneToMany(mappedBy = "entregador", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference  // Evita recursão infinita na serialização
-    @OrderBy("timestamp ASC")  // Ordena os pontos pela data de timestamp
-    private List<PontoRota> rotaOrdenada;
+    @JsonIgnore
+    @ToString.Exclude // removendo recursão infinita
+    private List<Rota> rotas;
 
-    // Adicionando um status para localização
-    private String localizacaoStatus;  // Ex: "em movimento", "parado"
+    private String localizacaoStatus;
 
-    // Métodos setters para latitude e longitude
     public void setLatitudeAtual(Double latitude) {
         this.latitude = latitude;
     }

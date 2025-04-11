@@ -8,7 +8,7 @@ import java.util.List;
 public interface PontoRotaRepository extends JpaRepository<PontoRota, Long> {
 
     // Método para buscar pontos de um entregador, ordenados por timestamp
-    List<PontoRota> findByEntregador_IdOrderByTimestampAsc(Long entregadorId);
+    List<PontoRota> findByRota_Entregador_IdOrderByTimestampAsc(Long entregadorId);
 
     // Método para buscar todos os pontos ordenados por timestamp
     List<PontoRota> findAllByOrderByTimestampAsc();

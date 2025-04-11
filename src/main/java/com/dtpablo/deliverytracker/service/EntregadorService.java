@@ -43,7 +43,7 @@ public class EntregadorService {
 
         return entregadores.stream()
                 .map(entregador -> {
-                    List<PontoRota> pontos = pontoRotaRepository.findByEntregador_IdOrderByTimestampAsc(entregador.getId());
+                    List<PontoRota> pontos = pontoRotaRepository.findByRota_Entregador_IdOrderByTimestampAsc(entregador.getId());
 
                     PontoRota ultimoPonto = pontos.stream()
                             .max(Comparator.comparing(PontoRota::getTimestamp)) // Acessando corretamente o timestamp

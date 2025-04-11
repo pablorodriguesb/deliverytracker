@@ -15,7 +15,7 @@ public class PontoRotaService {
 
     // Método para listar pontos de um entregador, ordenados por timestamp
     public List<PontoRota> listarPontosPorEntregador(Long entregadorId) {
-        return pontoRotaRepository.findByEntregador_IdOrderByTimestampAsc(entregadorId);
+        return pontoRotaRepository.findByRota_Entregador_IdOrderByTimestampAsc(entregadorId);
     }
 
     // Método para salvar um ponto de rota
