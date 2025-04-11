@@ -18,15 +18,14 @@ import java.util.stream.Collectors;
 @Service
 public class SimuladorLocalizacaoService {
 
-    private final PontoRotaService pontoRotaService;
+    private final RotaService rotaService;
     private final WebSocketService webSocketService;
 
-    // Guarda o índice atual da simulação por entregador
     private final Map<Long, Integer> entregadorIndicePontoAtual = new ConcurrentHashMap<>();
     private boolean simulacaoAtiva = false;
 
-    public SimuladorLocalizacaoService(PontoRotaService pontoRotaService, WebSocketService webSocketService) {
-        this.pontoRotaService = pontoRotaService;
+    public SimuladorLocalizacaoService(RotaService rotaService, WebSocketService webSocketService) {
+        this.rotaService = rotaService;
         this.webSocketService = webSocketService;
     }
 
@@ -46,7 +45,7 @@ public class SimuladorLocalizacaoService {
     public void simularMovimento() {
         if (!simulacaoAtiva) return;
 
-        List<PontoRota> todosPontos = pontoRotaService.buscarTodosOrdenadosPorTempo();
+        List<PontoRota> todosPontos = rotaService.buscarTodosOrdenadosPorTempo();
 
         if (todosPontos.isEmpty()) {
             log.warn("Nenhum ponto de rota encontrado.");
@@ -56,7 +55,6 @@ public class SimuladorLocalizacaoService {
         Map<Long, List<PontoRota>> pontosPorEntregador = todosPontos.stream()
                 .collect(Collectors.groupingBy(p -> p.getRota().getEntregador().getId()));
 
-
         for (Map.Entry<Long, List<PontoRota>> entry : pontosPorEntregador.entrySet()) {
             Long entregadorId = entry.getKey();
             List<PontoRota> pontos = entry.getValue();
@@ -65,7 +63,6 @@ public class SimuladorLocalizacaoService {
 
             int indiceAtual = entregadorIndicePontoAtual.getOrDefault(entregadorId, 0);
             if (indiceAtual >= pontos.size() - 1) {
-                // Entregador chegou ao fim da rota
                 continue;
             }
 
@@ -75,7 +72,7 @@ public class SimuladorLocalizacaoService {
             PontoRotaDTO pontoRotaDTO = new PontoRotaDTO(
                     entregadorId,
                     pontoAtual.getRota().getEntregador().getNome(),
-                    Status.EM_ROTA, // Simulando como se estivesse em rota
+                    Status.EM_ROTA,
                     pontoAtual.getLatitude(),
                     pontoAtual.getLongitude(),
                     LocalDateTime.now().toInstant(ZoneOffset.UTC)

@@ -5,6 +5,7 @@ import com.dtpablo.deliverytracker.entity.Rota;
 import com.dtpablo.deliverytracker.repository.PontoRotaRepository;
 import com.dtpablo.deliverytracker.repository.RotaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,8 @@ public class RotaService {
         return rotaRepository.findByEntregadorId(entregadorId);
     }
 
-    // Listar pontos de uma rota ordenados por timestamp
-    public List<PontoRota> listarPontosPorRota(Long rotaId) {
-        return pontoRotaRepository.findByRota_IdOrderByTimestampAsc(rotaId);  // Usando o repositório correto
+    public List<PontoRota> buscarTodosOrdenadosPorTempo() {
+        return pontoRotaRepository.findAll(Sort.by("tempo"));
     }
+
 }
