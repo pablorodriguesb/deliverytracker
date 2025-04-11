@@ -1,13 +1,13 @@
 package com.dtpablo.deliverytracker.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "rotas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,17 +18,16 @@ public class Rota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "entregador_id", nullable = false)
-    @JsonIgnore
+    private String nome;
+
+    // Relacionamento com Entregador (Muitos rotas podem ter um entregador)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entregador_id", nullable = false)  // Defina a coluna corretamente no banco
+    @JsonManagedReference  // Controla a serialização do lado da Rota
     private Entregador entregador;
 
-    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("ordem ASC")
-    private List<PontoRota> pontos = new ArrayList<>();
+    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference  // Controla a serialização do lado de PontoRota
+    private List<PontoRota> pontos;
 
-    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<RotaCheckpoint> checkpoints = new ArrayList<>();
-
-    private String nome;
 }

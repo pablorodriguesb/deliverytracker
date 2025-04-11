@@ -1,6 +1,6 @@
 package com.dtpablo.deliverytracker.service;
 
-import com.dtpablo.deliverytracker.dto.PosicaoDTO;
+import com.dtpablo.deliverytracker.dto.PontoRotaDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,8 @@ public class WebSocketService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void enviarPosicao(PosicaoDTO posicaoDTO) {
-        log.debug("Enviando posição para o tópico WebSocket: {}", posicaoDTO);
-        messagingTemplate.convertAndSend("/topic/posicoes", posicaoDTO);
+    public void enviarPosicao(PontoRotaDTO pontoRotaDTO) {
+        log.debug("Enviando posição para o tópico WebSocket: {}", pontoRotaDTO);
+        messagingTemplate.convertAndSend("/topic/posicoes", pontoRotaDTO);
     }
 }

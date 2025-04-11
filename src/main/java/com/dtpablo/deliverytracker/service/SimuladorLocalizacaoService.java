@@ -1,8 +1,7 @@
 package com.dtpablo.deliverytracker.service;
 
-import com.dtpablo.deliverytracker.entity.Entregador;
+import com.dtpablo.deliverytracker.dto.PontoRotaDTO;
 import com.dtpablo.deliverytracker.entity.PontoRota;
-import com.dtpablo.deliverytracker.dto.PosicaoDTO;
 import com.dtpablo.deliverytracker.enums.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +21,7 @@ public class SimuladorLocalizacaoService {
     private final PontoRotaService pontoRotaService;
     private final WebSocketService webSocketService;
 
+    // Guarda o índice atual da simulação por entregador
     private final Map<Long, Integer> entregadorIndicePontoAtual = new ConcurrentHashMap<>();
     private boolean simulacaoAtiva = false;
 
@@ -30,32 +30,21 @@ public class SimuladorLocalizacaoService {
         this.webSocketService = webSocketService;
     }
 
-    /**
-     * Inicia a simulação de movimentação.
-     */
     public void iniciarSimulacao() {
-        log.info("Simulação de entregadores iniciada.");
-        this.simulacaoAtiva = true;
-        simularMovimento(); // Executa imediatamente ao iniciar
+        log.info("Simulação de localização iniciada.");
+        simulacaoAtiva = true;
+        simularMovimento(); // Executa uma vez imediatamente
     }
 
-    /**
-     * Pausa a simulação.
-     */
     public void pararSimulacao() {
-        log.info("Simulação de entregadores pausada.");
-        this.simulacaoAtiva = false;
-        entregadorIndicePontoAtual.clear(); // Limpa o índice quando a simulação é pausada
+        log.info("Simulação de localização pausada.");
+        simulacaoAtiva = false;
+        entregadorIndicePontoAtual.clear();
     }
 
-    /**
-     * Roda a cada 5 segundos, atualizando as posições.
-     */
     @Scheduled(fixedRate = 5000)
     public void simularMovimento() {
         if (!simulacaoAtiva) return;
-
-        log.info("Atualizando posições dos entregadores...");
 
         List<PontoRota> todosPontos = pontoRotaService.buscarTodosOrdenadosPorTempo();
 
@@ -73,49 +62,33 @@ public class SimuladorLocalizacaoService {
 
             if (pontos.isEmpty()) continue;
 
-            Entregador entregador = pontos.get(0).getEntregador();
-            if (entregador.getStatus() == Status.INATIVO) continue;
-
             int indiceAtual = entregadorIndicePontoAtual.getOrDefault(entregadorId, 0);
             if (indiceAtual >= pontos.size() - 1) {
-                // Não move o entregador se estiver no último ponto da rota
+                // Entregador chegou ao fim da rota
                 continue;
-            } else {
-                indiceAtual++;
             }
 
-            PontoRota novaPosicao = pontos.get(indiceAtual);
-            entregador.setLatitude(novaPosicao.getLatitude());
-            entregador.setLongitude(novaPosicao.getLongitude());
-            entregador.setUltimaAtualizacao(LocalDateTime.now());
+            PontoRota pontoAtual = pontos.get(indiceAtual);
+            entregadorIndicePontoAtual.put(entregadorId, indiceAtual + 1);
 
-            entregadorIndicePontoAtual.put(entregadorId, indiceAtual);
-
-            log.debug("Entregador {} movido para a posição {}, {}", entregador.getId(), novaPosicao.getLatitude(), novaPosicao.getLongitude());
-
-            // Criando o PosicaoDTO com os dados necessários
-            PosicaoDTO posicaoDTO = new PosicaoDTO(
-                    entregador.getId(),
-                    entregador.getNome(),
-                    entregador.getStatus(),
-                    entregador.getLatitude(),
-                    entregador.getLongitude(),
-                    entregador.getUltimaAtualizacao().toInstant(ZoneOffset.UTC)
+            PontoRotaDTO pontoRotaDTO = new PontoRotaDTO(
+                    entregadorId,
+                    pontoAtual.getEntregador().getNome(),
+                    Status.EM_ROTA, // Simulando como se estivesse em rota
+                    pontoAtual.getLatitude(),
+                    pontoAtual.getLongitude(),
+                    LocalDateTime.now().toInstant(ZoneOffset.UTC)
             );
 
-            // Enviando a posição do entregador via WebSocket
-            webSocketService.enviarPosicao(posicaoDTO);
+            webSocketService.enviarPosicao(pontoRotaDTO);
 
-            log.info("Entregador {} ({}) → Ponto {}/{} enviado.",
-                    entregador.getId(), entregador.getNome(), indiceAtual + 1, pontos.size());
+            log.info("Entregador {} → posição simulada {}/{}: ({}, {})",
+                    entregadorId, indiceAtual + 1, pontos.size(),
+                    pontoAtual.getLatitude(), pontoAtual.getLongitude());
         }
     }
 
-    /**
-     * Reseta a simulação.
-     */
     public void resetarSimulacao() {
-        entregadorIndicePontoAtual.clear();
         pararSimulacao();
         log.info("Simulação resetada.");
     }

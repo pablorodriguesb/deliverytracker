@@ -7,15 +7,18 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-location").setAllowedOriginPatterns("*").withSockJS();
+        // Removendo o parâmetro {token} da URL
+        registry.addEndpoint("/ws-location")
+                .setAllowedOrigins("http://localhost:5173")  // Permite origens do frontend
+                .withSockJS();  // Habilita fallback para navegadores antigos
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/topic"); // Mensagens de saída
+        config.setApplicationDestinationPrefixes("/app"); // Mensagens de entrada
     }
 }
-

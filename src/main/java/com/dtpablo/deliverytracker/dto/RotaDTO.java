@@ -14,4 +14,5 @@ public class RotaDTO {
     private String nome;  // Adicionando o campo nome
     private String nomeEntregador;
     private List<PontoRota> pontos;
+
 }

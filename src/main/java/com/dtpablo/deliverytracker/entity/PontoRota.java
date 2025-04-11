@@ -1,10 +1,14 @@
 package com.dtpablo.deliverytracker.entity;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
+@Table(name = "pontos_rota")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,25 +19,24 @@ public class PontoRota {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relacionamento com o entregador
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "entregador_id", nullable = false)
-    private Entregador entregador;  // Adicionado o relacionamento com Entregador
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rota_id", nullable = false)
+    @JsonBackReference // Controla a serialização do lado de PontoRota
     private Rota rota;
 
-    @Column(nullable = false)
-    private Double latitude;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entregador_id", nullable = false)
+    @JsonIgnore
+    private Entregador entregador;
 
-    @Column(nullable = false)
+    private Double latitude;
     private Double longitude;
 
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    @Column(name = "timestamp")
+    private Instant timestamp;
 
-    // Campo para definir a ordem do ponto na rota
-    @Column(nullable = false)
-    private Integer ordem;
+    // Campo adicional para marcar se é um checkpoint
+    @Column(name = "is_checkpoint")
+    private Boolean isCheckpoint;  // Use o tipo correto para indicar se é um checkpoint
+
 }

@@ -19,8 +19,14 @@ public class LocationWebSocketController {
         Entregador entregador = entregadorRepository.findById(message.getEntregadorId())
                 .orElseThrow(() -> new RuntimeException("Entregador não encontrado"));
 
+        // Atualiza a posição atual (utilizada no mapa em tempo real)
+        entregador.setLatitudeAtual(message.getLatitude());
+        entregador.setLongitudeAtual(message.getLongitude());
+
+        // Opcional: atualizar também a posição fixa (caso necessário)
         entregador.setLatitude(message.getLatitude());
         entregador.setLongitude(message.getLongitude());
+
         entregadorRepository.save(entregador);
 
         return message; // Envia de volta para todos os clientes

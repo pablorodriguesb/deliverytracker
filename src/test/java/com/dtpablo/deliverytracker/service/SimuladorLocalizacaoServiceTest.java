@@ -1,6 +1,6 @@
 package com.dtpablo.deliverytracker.service;
 
-import com.dtpablo.deliverytracker.dto.PosicaoDTO;
+import com.dtpablo.deliverytracker.dto.PontoRotaDTO;
 import com.dtpablo.deliverytracker.entity.Entregador;
 import com.dtpablo.deliverytracker.entity.PontoRota;
 import com.dtpablo.deliverytracker.enums.Status;
@@ -12,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -55,7 +54,7 @@ class SimuladorLocalizacaoServiceTest {
         simuladorLocalizacaoService.simularMovimento();
 
         // Verifica se o método de envio via WebSocket foi chamado
-        verify(webSocketService, times(1)).enviarPosicao(any(PosicaoDTO.class));
+        verify(webSocketService, times(1)).enviarPosicao(any(PontoRotaDTO.class));
 
         // Verifica se o entregador teve sua posição atualizada
         assert entregador.getLatitude() == 10.1;
